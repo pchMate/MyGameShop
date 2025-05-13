@@ -3,32 +3,32 @@ package mygameshop.Models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserModel {
-    private int Id;
-    private String Name;
-    private List<GameModel> GamesOwned = new ArrayList<>();
+public final class UserModel {
+    private int id;
+    private String name;
+    private List<GameModel> gamesOwned = new ArrayList<>();
 
     public int getId() {
-        return Id;
+        return id;
     }
 
-    public void setId(int id) {
-        Id = id;
+    public void setId(final int id) {
+        this.id = id;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
-    public void setName(String name) {
-        Name = name;
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public List<GameModel> getGamesOwned() {
-        return GamesOwned;
+        return gamesOwned;
     }
 
-    public void setGamesOwned(List<GameModel> gamesOwned) {
-        GamesOwned = gamesOwned;
+    public void setGamesOwned(final List<GameModel> gamesOwned) {
+        this.gamesOwned = gamesOwned;
     }
 }

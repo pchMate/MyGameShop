@@ -19,10 +19,12 @@ public final class RegisterUserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(
-            final @ModelAttribute("user") RegisteredUser user, final HttpServletResponse response) {
+            final @ModelAttribute("user") RegisteredUser user,
+            final HttpServletResponse response) {
         if (user.loginname() == null || user.loginname().isEmpty()
         || user.passhash() == null || user.passhash().isEmpty()) {
-            return ResponseEntity.badRequest().body("LoginName and PassHash are required.");
+            return ResponseEntity.badRequest().
+                    body("LoginName and PassHash are required.");
         }
 
         try {
@@ -36,7 +38,9 @@ public final class RegisterUserController {
             RegisteredUserUserModel user3 = RegisteredUserDB.getRegisteredUserByData(
                     user.loginname(), user.passhash());
             if (!Objects.equals(user3.loginname(), user.loginname()))
+            {
                 return ResponseEntity.badRequest().body("Something happened in database");
+            }
             Cookie cookie = new Cookie("userId", String.valueOf(user3.getId()));
             cookie.setPath("/");
             cookie.setMaxAge(7 * 24 * 60 * 60);

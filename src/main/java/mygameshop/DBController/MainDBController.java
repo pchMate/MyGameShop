@@ -97,7 +97,7 @@ public final class MainDBController {
                 game.setId(rs.getInt("Id"));
                 game.setTitle(rs.getString("Title"));
                 game.setPrice(rs.getDouble("Price"));
-                game.setPictureURL(rs.getString("PictureURL"));
+                game.setPictureUrl(rs.getString("PictureURL"));
                 game.setDescription(rs.getString("Description"));
                 game.setRating(rs.getDouble("Rating"));
                 game.setReleaseDate(new Date(rs.getDate("ReleaseDate").getTime()));

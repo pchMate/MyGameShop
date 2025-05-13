@@ -63,7 +63,9 @@ public final class RegisteredUserDB {
 
     public static RegisteredUserUserModel getRegisteredUserByData(
             final String loginName, final String passHash) {
-        String query = "SELECT * FROM RegisteredUser WHERE LoginName = ? AND PassHash = ?";
+        String query = """
+                SELECT * FROM RegisteredUser \
+                WHERE LoginName = ? AND PassHash = ?""";
         RegisteredUserUserModel user = null;
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
@@ -111,7 +113,7 @@ public final class RegisteredUserDB {
     }
 
     // Delete a Registered User by ID
-    public static void deleteRegisteredUserById(int id) {
+    public static void deleteRegisteredUserById(final int id) {
         String query = "DELETE FROM RegisteredUser WHERE Id = ?";
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);

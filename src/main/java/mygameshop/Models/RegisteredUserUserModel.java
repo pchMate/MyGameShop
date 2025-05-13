@@ -23,7 +23,7 @@ public final class RegisteredUserUserModel implements RegisteredUser {
         return Id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         Id = id;
     }
 
@@ -31,7 +31,7 @@ public final class RegisteredUserUserModel implements RegisteredUser {
         return Banned;
     }
 
-    public void setBanned(boolean banned) {
+    public void setBanned(final boolean banned) {
         Banned = banned;
     }
 
@@ -39,15 +39,15 @@ public final class RegisteredUserUserModel implements RegisteredUser {
         return IsAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(final boolean admin) {
         IsAdmin = admin;
     }
 
-    public void setLoginname(String loginname) {
+    public void setLoginname(final String loginname) {
         this.loginname = loginname;
     }
 
-    public void setPasshash(String passhash) {
+    public void setPasshash(final String passhash) {
         this.passhash = passhash;
     }
 }
