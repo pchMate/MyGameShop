@@ -13,13 +13,15 @@ import java.util.Date;
 
 
 public final class MainDBController {
-    public static final String MainDB = "jdbc:sqlite:main.db";
+    public static final String MAIN_DB = "jdbc:sqlite:main.db";
 
-    public static void EnsureExists() {
+    private MainDBController() {}
+
+    public static void ensureExists() {
         try {
-            Connection conn = DriverManager.getConnection(MainDB);
+            Connection conn = DriverManager.getConnection(MAIN_DB);
             Statement stmt = conn.createStatement();
-            String CreateGameTable = """
+            String creategametable = """
                     CREATE TABLE IF NOT EXISTS Game (
                     Id PRIMARY KEY AUTOINCREMENT,
                     Title\tTEXT NOT NULL,
@@ -29,25 +31,25 @@ public final class MainDBController {
                     Rating REAL,
                     ReleaseDate TEXT,
                     );""";
-            stmt.execute(CreateGameTable);
+            stmt.execute(creategametable);
 
-            String GameTag = """
+            String gameTag = """
                     CREATE TABLE IF NOT EXISTS GameTag (
                     GameId INTEGER NOT NULL,
                     Tag TEXT NOT NULL,
                     PRIMARY KEY (GameId, Tag),
                     FOREIGN KEY (GameId) REFERENCES Game(Id) ON DELETE CASCADE
                     );""";
-            stmt.execute(GameTag);
+            stmt.execute(gameTag);
 
-            String User = """
+            String user = """
                     CREATE TABLE User IF NOT EXISTS (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT NOT NULL
                     );""";
-            stmt.execute(User);
+            stmt.execute(user);
 
-            String UserGame = """
+            String usergame = """
                     CREATE TABLE IF NOT EXISTS UserGame (
                     UserId INTEGER NOT NULL,
                     GameId INTEGER NOT NULL,
@@ -55,9 +57,9 @@ public final class MainDBController {
                     FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
                     FOREIGN KEY (GameId) REFERENCES Game(Id) ON DELETE CASCADE
                     );""";
-            stmt.execute(UserGame);
+            stmt.execute(usergame);
 
-            String RegisteredUser = """
+            String registereduser = """
                     CREATE TABLE IF NOT EXISTS RegisteredUser (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Banned BOOLEAN NOT NULL,
@@ -65,7 +67,7 @@ public final class MainDBController {
                     LoginName TEXT NOT NULL UNIQUE,
                     PassHash TEXT NOT NULL
                     );""";
-            stmt.execute(RegisteredUser);
+            stmt.execute(registereduser);
         }
         catch (SQLException e)
         {
@@ -73,13 +75,13 @@ public final class MainDBController {
         }
     }
 
-    public static GameModel GetGameById(int gameId)
+    public static GameModel getGameById(final int gameId)
     {
         String query = "SELECT * FROM Game WHERE Id = ?";
         String tagQuery = "SELECT Tag FROM GameTag WHERE GameId = ?";
         GameModel game = null;
-        EnsureExists();
-        try (Connection conn = DriverManager.getConnection(MainDB);
+        ensureExists();
+        try (Connection conn = DriverManager.getConnection(MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query);
              PreparedStatement tagStmt = conn.prepareStatement(tagQuery)) {
 
@@ -109,13 +111,13 @@ public final class MainDBController {
         return game;
     }
 
-    public static UserModel GetUserById(int userId)
+    public static UserModel getUserById(final int userId)
     {
         String query = "SELECT * FROM User WHERE Id = ?";
         String gamesQuery = "SELECT GameId FROM UserGame WHERE UserId = ?";
         UserModel user = null;
 
-        try (Connection conn = DriverManager.getConnection(MainDB);
+        try (Connection conn = DriverManager.getConnection(MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query);
              PreparedStatement gamesStmt = conn.prepareStatement(gamesQuery)) {
 
@@ -132,7 +134,7 @@ public final class MainDBController {
                 ResultSet gamesRs = gamesStmt.executeQuery();
                 while (gamesRs.next()) {
                     int gameId = gamesRs.getInt("GameId");
-                    GameModel game = GetGameById(gameId); // Fetch game details
+                    GameModel game = getGameById(gameId); // Fetch game details
                     if (game != null) {
                         user.GamesOwned.add(game);
                     }

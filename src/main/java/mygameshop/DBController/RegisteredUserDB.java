@@ -3,14 +3,20 @@ package mygameshop.DBController;
 import mygameshop.Models.RegisteredUserUserModel;
 import mygameshop.interfaces.RegisteredUser;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public final class RegisteredUserDB {
+
+    private RegisteredUserDB() {}
     // Insert a new Registered User
     public static void insertRegisteredUser(RegisteredUser user) {
         String query = "INSERT INTO RegisteredUser (Banned, IsAdmin, LoginName, PassHash) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
+        try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setBoolean(1, false);
@@ -30,7 +36,7 @@ public final class RegisteredUserDB {
         String query = "SELECT * FROM RegisteredUser WHERE Id = ?";
         RegisteredUserUserModel user = null;
 
-        try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
+        try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, id);
@@ -51,11 +57,12 @@ public final class RegisteredUserDB {
         return user;
     }
 
-    public static RegisteredUserUserModel getRegisteredUserByData(String loginName, String passHash) {
+    public static RegisteredUserUserModel getRegisteredUserByData
+            (String loginName, String passHash) {
         String query = "SELECT * FROM RegisteredUser WHERE LoginName = ? AND PassHash = ?";
         RegisteredUserUserModel user = null;
 
-        try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
+        try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, loginName);
@@ -79,9 +86,11 @@ public final class RegisteredUserDB {
 
     // Update a Registered User
     public static void updateRegisteredUser(RegisteredUserUserModel user) {
-        String query = "UPDATE RegisteredUser SET Banned = ?, IsAdmin = ?, LoginName = ?, PassHash = ? WHERE Id = ?";
+        String query = """
+                UPDATE RegisteredUser SET Banned = ?, \
+                IsAdmin = ?, LoginName = ?, PassHash = ? WHERE Id = ?""";
 
-        try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
+        try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setBoolean(1, user.isBanned());
@@ -101,7 +110,7 @@ public final class RegisteredUserDB {
     public static void deleteRegisteredUserById(int id) {
         String query = "DELETE FROM RegisteredUser WHERE Id = ?";
 
-        try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
+        try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, id);
