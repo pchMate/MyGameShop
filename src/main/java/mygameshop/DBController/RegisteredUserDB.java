@@ -1,13 +1,13 @@
 package mygameshop.DBController;
 
-import mygameshop.Models.RegisteredUserModel;
-import mygameshop.interfaces.registereduser;
+import mygameshop.Models.RegisteredUserUserModel;
+import mygameshop.interfaces.RegisteredUser;
 
 import java.sql.*;
 
 public final class RegisteredUserDB {
     // Insert a new Registered User
-    public static void insertRegisteredUser(registereduser user) {
+    public static void insertRegisteredUser(RegisteredUser user) {
         String query = "INSERT INTO RegisteredUser (Banned, IsAdmin, LoginName, PassHash) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
@@ -26,9 +26,9 @@ public final class RegisteredUserDB {
     }
 
     // Fetch a RegisteredUser by ID
-    public static RegisteredUserModel getRegisteredUserById(int id) {
+    public static RegisteredUserUserModel getRegisteredUserById(int id) {
         String query = "SELECT * FROM RegisteredUser WHERE Id = ?";
-        RegisteredUserModel user = null;
+        RegisteredUserUserModel user = null;
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -37,12 +37,12 @@ public final class RegisteredUserDB {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                user = new RegisteredUserModel();
-                user.Id = (rs.getInt("Id"));
-                user.Banned = (rs.getBoolean("Banned"));
-                user.IsAdmin = (rs.getBoolean("IsAdmin"));
-                user.loginname = (rs.getString("LoginName"));
-                user.passhash = (rs.getString("PassHash"));
+                user = new RegisteredUserUserModel();
+                user.setId(rs.getInt("Id"));
+                user.setBanned(rs.getBoolean("Banned"));
+                user.setAdmin(rs.getBoolean("IsAdmin"));
+                user.setLoginname(rs.getString("LoginName"));
+                user.setPasshash(rs.getString("PassHash"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -51,9 +51,9 @@ public final class RegisteredUserDB {
         return user;
     }
 
-    public static RegisteredUserModel getRegisteredUserByData(String loginName, String passHash) {
+    public static RegisteredUserUserModel getRegisteredUserByData(String loginName, String passHash) {
         String query = "SELECT * FROM RegisteredUser WHERE LoginName = ? AND PassHash = ?";
-        RegisteredUserModel user = null;
+        RegisteredUserUserModel user = null;
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -63,12 +63,12 @@ public final class RegisteredUserDB {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                user = new RegisteredUserModel();
-                user.Id = (rs.getInt("Id"));
-                user.Banned = (rs.getBoolean("Banned"));
-                user.IsAdmin = (rs.getBoolean("IsAdmin"));
-                user.loginname = (rs.getString("LoginName"));
-                user.passhash = (rs.getString("PassHash"));
+                user = new RegisteredUserUserModel();
+                user.setId(rs.getInt("Id"));
+                user.setBanned(rs.getBoolean("Banned"));
+                user.setAdmin(rs.getBoolean("IsAdmin"));
+                user.setLoginname(rs.getString("LoginName"));
+                user.setPasshash(rs.getString("PassHash"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -78,17 +78,17 @@ public final class RegisteredUserDB {
     }
 
     // Update a Registered User
-    public static void updateRegisteredUser(RegisteredUserModel user) {
+    public static void updateRegisteredUser(RegisteredUserUserModel user) {
         String query = "UPDATE RegisteredUser SET Banned = ?, IsAdmin = ?, LoginName = ?, PassHash = ? WHERE Id = ?";
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MainDB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setBoolean(1, user.Banned);
-            stmt.setBoolean(2, user.IsAdmin);
-            stmt.setString(3, user.loginname);
-            stmt.setString(4, user.passhash);
-            stmt.setInt(5, user.Id);
+            stmt.setBoolean(1, user.isBanned());
+            stmt.setBoolean(2, user.isAdmin());
+            stmt.setString(3, user.loginname());
+            stmt.setString(4, user.passhash());
+            stmt.setInt(5, user.getId());
 
             stmt.executeUpdate();
             System.out.println("User updated successfully.");

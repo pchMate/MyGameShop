@@ -3,7 +3,14 @@ package mygameshop.DBController;
 import mygameshop.Models.GameModel;
 import mygameshop.Models.UserModel;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Date;
+
 
 public final class MainDBController {
     public static final String MainDB = "jdbc:sqlite:main.db";
@@ -12,47 +19,52 @@ public final class MainDBController {
         try {
             Connection conn = DriverManager.getConnection(MainDB);
             Statement stmt = conn.createStatement();
-            String CreateGameTable = "CREATE TABLE IF NOT EXISTS Game (\n" +
-                    "Id PRIMARY KEY AUTOINCREMENT,\n" +
-                    "Title\tTEXT NOT NULL,\n" +
-                    "Price\tREAL,\n" +
-                    "PictureURL TEXT,\n" +
-                    "Description TEXT,\n" +
-                    "Rating REAL,\n" +
-                    "ReleaseDate TEXT,\n" +
-                    ");";
+            String CreateGameTable = """
+                    CREATE TABLE IF NOT EXISTS Game (
+                    Id PRIMARY KEY AUTOINCREMENT,
+                    Title\tTEXT NOT NULL,
+                    Price\tREAL,
+                    PictureURL TEXT,
+                    Description TEXT,
+                    Rating REAL,
+                    ReleaseDate TEXT,
+                    );""";
             stmt.execute(CreateGameTable);
 
-            String GameTag = "CREATE TABLE IF NOT EXISTS GameTag (\n" +
-                    "GameId INTEGER NOT NULL,\n" +
-                    "Tag TEXT NOT NULL,\n" +
-                    "PRIMARY KEY (GameId, Tag),\n" +
-                    "FOREIGN KEY (GameId) REFERENCES Game(Id) ON DELETE CASCADE\n" +
-                    ");";
+            String GameTag = """
+                    CREATE TABLE IF NOT EXISTS GameTag (
+                    GameId INTEGER NOT NULL,
+                    Tag TEXT NOT NULL,
+                    PRIMARY KEY (GameId, Tag),
+                    FOREIGN KEY (GameId) REFERENCES Game(Id) ON DELETE CASCADE
+                    );""";
             stmt.execute(GameTag);
 
-            String User = "CREATE TABLE User IF NOT EXISTS (\n" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "Name TEXT NOT NULL\n" +
-                    ");";
+            String User = """
+                    CREATE TABLE User IF NOT EXISTS (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT NOT NULL
+                    );""";
             stmt.execute(User);
 
-            String UserGame = "CREATE TABLE IF NOT EXISTS UserGame (\n" +
-                    "UserId INTEGER NOT NULL,\n" +
-                    "GameId INTEGER NOT NULL,\n" +
-                    "PRIMARY KEY (UserId, GameId),\n" +
-                    "FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,\n" +
-                    "FOREIGN KEY (GameId) REFERENCES Game(Id) ON DELETE CASCADE\n" +
-                    ");";
+            String UserGame = """
+                    CREATE TABLE IF NOT EXISTS UserGame (
+                    UserId INTEGER NOT NULL,
+                    GameId INTEGER NOT NULL,
+                    PRIMARY KEY (UserId, GameId),
+                    FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE,
+                    FOREIGN KEY (GameId) REFERENCES Game(Id) ON DELETE CASCADE
+                    );""";
             stmt.execute(UserGame);
 
-            String RegisteredUser = "CREATE TABLE IF NOT EXISTS RegisteredUser (\n" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "Banned BOOLEAN NOT NULL,\n" +
-                    "IsAdmin BOOLEAN NOT NULL,\n" +
-                    "LoginName TEXT NOT NULL UNIQUE,\n" +
-                    "PassHash TEXT NOT NULL\n" +
-                    ");";
+            String RegisteredUser = """
+                    CREATE TABLE IF NOT EXISTS RegisteredUser (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Banned BOOLEAN NOT NULL,
+                    IsAdmin BOOLEAN NOT NULL,
+                    LoginName TEXT NOT NULL UNIQUE,
+                    PassHash TEXT NOT NULL
+                    );""";
             stmt.execute(RegisteredUser);
         }
         catch (SQLException e)

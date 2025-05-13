@@ -1,6 +1,6 @@
 package mygameshop.interfaces;
 
-public interface registereduser {
+public interface RegisteredUser {
     String loginname();
     String passhash();
 }
