@@ -9,7 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = "mygameshop")
 @Configuration
 @EnableWebMvc
-@SuppressWarnings("fallthrough")
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public final void addViewControllers(ViewControllerRegistry registry) {

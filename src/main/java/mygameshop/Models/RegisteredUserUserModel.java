@@ -3,9 +3,9 @@ package mygameshop.Models;
 import mygameshop.interfaces.RegisteredUser;
 
 public final class RegisteredUserUserModel implements RegisteredUser {
-    private int Id;
-    private boolean Banned;
-    private boolean IsAdmin;
+    private int id;
+    private boolean banned;
+    private boolean isAdmin;
     private String loginname;
     private String passhash;
 
@@ -20,27 +20,27 @@ public final class RegisteredUserUserModel implements RegisteredUser {
     }
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(final int id) {
-        Id = id;
+        this.id = id;
     }
 
     public boolean isBanned() {
-        return Banned;
+        return banned;
     }
 
     public void setBanned(final boolean banned) {
-        Banned = banned;
+        this.banned = banned;
     }
 
     public boolean isAdmin() {
-        return IsAdmin;
+        return isAdmin;
     }
 
     public void setAdmin(final boolean admin) {
-        IsAdmin = admin;
+        isAdmin = admin;
     }
 
     public void setLoginname(final String loginname) {
