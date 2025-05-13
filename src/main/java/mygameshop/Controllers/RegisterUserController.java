@@ -39,7 +39,8 @@ public final class RegisterUserController {
                     user.loginname(), user.passhash());
             if (!Objects.equals(user3.loginname(), user.loginname()))
             {
-                return ResponseEntity.badRequest().body("Something happened in database");
+                return ResponseEntity.badRequest().
+                        body("Something happened in database");
             }
             Cookie cookie = new Cookie("userId", String.valueOf(user3.getId()));
             cookie.setPath("/");
