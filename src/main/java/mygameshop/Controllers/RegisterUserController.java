@@ -3,10 +3,11 @@ package mygameshop.Controllers;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import mygameshop.DBController.RegisteredUserDB;
-import mygameshop.Models.RegisteredUserUserModel;
+import mygameshop.Models.RegisteredUserModel;
 import mygameshop.interfaces.RegisteredUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +18,14 @@ import java.util.Objects;
 @RequestMapping("/auth")
 public final class RegisterUserController {
 
+    @GetMapping("/register")
+    public String showRegisterForm() {
+        return "authing/register";
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(
-            final @ModelAttribute("user") RegisteredUser user,
+            final @ModelAttribute("registeredUser") RegisteredUserModel user,
             final HttpServletResponse response) {
         if (user.loginname() == null || user.loginname().isEmpty()
         || user.passhash() == null || user.passhash().isEmpty()) {
@@ -28,14 +34,14 @@ public final class RegisterUserController {
         }
 
         try {
-            RegisteredUserUserModel user2 = RegisteredUserDB.getRegisteredUserByData(
+            RegisteredUserModel user2 = RegisteredUserDB.getRegisteredUserByData(
                     user.loginname(), user.passhash());
             if (user2 != null)
             {
                 return ResponseEntity.badRequest().body("User already registered.");
             }
             RegisteredUserDB.insertRegisteredUser(user);
-            RegisteredUserUserModel user3 = RegisteredUserDB.getRegisteredUserByData(
+            RegisteredUserModel user3 = RegisteredUserDB.getRegisteredUserByData(
                     user.loginname(), user.passhash());
             if (!Objects.equals(user3.loginname(), user.loginname()))
             {

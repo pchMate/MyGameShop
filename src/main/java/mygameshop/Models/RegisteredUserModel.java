@@ -1,13 +1,19 @@
 package mygameshop.Models;
 
 import mygameshop.interfaces.RegisteredUser;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
-public final class RegisteredUserUserModel implements RegisteredUser {
+public final class RegisteredUserModel implements RegisteredUser {
     private int id;
     private boolean banned;
     private boolean isAdmin;
     private String loginname;
     private String passhash;
+
+    @ModelAttribute("registeredUser")
+    public RegisteredUserModel initRegisteredUser() {
+        return new RegisteredUserModel();
+    }
 
     @Override
     public String loginname() {

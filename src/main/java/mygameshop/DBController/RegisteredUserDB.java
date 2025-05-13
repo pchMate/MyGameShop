@@ -1,6 +1,6 @@
 package mygameshop.DBController;
 
-import mygameshop.Models.RegisteredUserUserModel;
+import mygameshop.Models.RegisteredUserModel;
 import mygameshop.interfaces.RegisteredUser;
 
 import java.sql.Connection;
@@ -36,9 +36,9 @@ public final class RegisteredUserDB {
     }
 
     // Fetch a RegisteredUser by ID
-    public static RegisteredUserUserModel getRegisteredUserById(final int id) {
+    public static RegisteredUserModel getRegisteredUserById(final int id) {
         String query = "SELECT * FROM RegisteredUser WHERE Id = ?";
-        RegisteredUserUserModel user = null;
+        RegisteredUserModel user = null;
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -47,7 +47,7 @@ public final class RegisteredUserDB {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                user = new RegisteredUserUserModel();
+                user = new RegisteredUserModel();
                 user.setId(rs.getInt("Id"));
                 user.setBanned(rs.getBoolean("Banned"));
                 user.setAdmin(rs.getBoolean("IsAdmin"));
@@ -61,12 +61,12 @@ public final class RegisteredUserDB {
         return user;
     }
 
-    public static RegisteredUserUserModel getRegisteredUserByData(
+    public static RegisteredUserModel getRegisteredUserByData(
             final String loginName, final String passHash) {
         String query = """
                 SELECT * FROM RegisteredUser \
                 WHERE LoginName = ? AND PassHash = ?""";
-        RegisteredUserUserModel user = null;
+        RegisteredUserModel user = null;
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -76,7 +76,7 @@ public final class RegisteredUserDB {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                user = new RegisteredUserUserModel();
+                user = new RegisteredUserModel();
                 user.setId(rs.getInt("Id"));
                 user.setBanned(rs.getBoolean("Banned"));
                 user.setAdmin(rs.getBoolean("IsAdmin"));
@@ -91,7 +91,7 @@ public final class RegisteredUserDB {
     }
 
     // Update a Registered User
-    public static void updateRegisteredUser(final RegisteredUserUserModel user) {
+    public static void updateRegisteredUser(final RegisteredUserModel user) {
         String query = """
                 UPDATE RegisteredUser SET Banned = ?, \
                 IsAdmin = ?, LoginName = ?, PassHash = ? WHERE Id = ?""";
