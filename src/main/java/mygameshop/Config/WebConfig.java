@@ -9,11 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = "mygameshop")
 @Configuration
 @EnableWebMvc
-public final class WebConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
     @Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
+    public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/index").setViewName("index");
+        registry.addViewController("/reg").setViewName("authing/register");
     }
 
 }

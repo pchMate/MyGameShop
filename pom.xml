@@ -76,6 +76,12 @@
             <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- SQLite for DataBase -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.42.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
