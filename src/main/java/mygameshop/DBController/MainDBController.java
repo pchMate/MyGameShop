@@ -9,13 +9,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public final class MainDBController {
     public static final String MAIN_DB = "jdbc:sqlite:main.db";
 
-    private MainDBController() {}
+    private MainDBController() {
+
+    }
 
     public static void ensureExists() {
         try {
@@ -90,20 +94,22 @@ public final class MainDBController {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 game = new GameModel();
-                game.Id = rs.getInt("Id");
-                game.Title = rs.getString("Title");
-                game.Price =rs.getDouble("Price");
-                game.PictureURL = rs.getString("PictureURL");
-                game.Description = rs.getString("Description");
-                game.Rating = rs.getDouble("Rating");
-                game.ReleaseDate = new Date(rs.getDate("ReleaseDate").getTime());
+                game.setId(rs.getInt("Id"));
+                game.setTitle(rs.getString("Title"));
+                game.setPrice(rs.getDouble("Price"));
+                game.setPictureURL(rs.getString("PictureURL"));
+                game.setDescription(rs.getString("Description"));
+                game.setRating(rs.getDouble("Rating"));
+                game.setReleaseDate(new Date(rs.getDate("ReleaseDate").getTime()));
 
                 // Fetch tags for the game
                 tagStmt.setInt(1, gameId);
+                List<String> tags = new ArrayList<>();
                 ResultSet tagRs = tagStmt.executeQuery();
                 while (tagRs.next()) {
-                    game.Tags.add(tagRs.getString("Tag"));
+                    tags.add(tagRs.getString("Tag"));
                 }
+                game.setTags(tags);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -126,19 +132,21 @@ public final class MainDBController {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 user = new UserModel();
-                user.Id = rs.getInt("Id");
-                user.Name = rs.getString("Name");
+                user.setId(rs.getInt("Id"));
+                user.setName(rs.getString("Name"));
 
                 // Fetch games owned by user
                 gamesStmt.setInt(1, userId);
                 ResultSet gamesRs = gamesStmt.executeQuery();
+                List<GameModel> gamesOwned = new ArrayList<>();
                 while (gamesRs.next()) {
                     int gameId = gamesRs.getInt("GameId");
                     GameModel game = getGameById(gameId); // Fetch game details
                     if (game != null) {
-                        user.GamesOwned.add(game);
+                        gamesOwned.add(game);
                     }
                 }
+                user.setGamesOwned(gamesOwned);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

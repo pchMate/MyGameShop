@@ -15,28 +15,31 @@ import java.util.Objects;
 
 @Controller
 @RequestMapping("/auth")
-public class RegisterUserController {
+public final class RegisterUserController {
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@ModelAttribute("user") RegisteredUser user, HttpServletResponse response) {
-        if (user.loginname() == null || user.loginname().isEmpty() ||
-                user.passhash() == null || user.passhash().isEmpty()) {
+    public ResponseEntity<String> register(
+            final @ModelAttribute("user") RegisteredUser user, final HttpServletResponse response) {
+        if (user.loginname() == null || user.loginname().isEmpty()
+        || user.passhash() == null || user.passhash().isEmpty()) {
             return ResponseEntity.badRequest().body("LoginName and PassHash are required.");
         }
 
         try {
-            RegisteredUserUserModel user2 = RegisteredUserDB.getRegisteredUserByData(user.loginname(), user.passhash());
+            RegisteredUserUserModel user2 = RegisteredUserDB.getRegisteredUserByData(
+                    user.loginname(), user.passhash());
             if (user2 != null)
             {
                 return ResponseEntity.badRequest().body("User already registered.");
             }
             RegisteredUserDB.insertRegisteredUser(user);
-            RegisteredUserUserModel user3 = RegisteredUserDB.getRegisteredUserByData(user.loginname(), user.passhash());
+            RegisteredUserUserModel user3 = RegisteredUserDB.getRegisteredUserByData(
+                    user.loginname(), user.passhash());
             if (!Objects.equals(user3.loginname(), user.loginname()))
                 return ResponseEntity.badRequest().body("Something happened in database");
             Cookie cookie = new Cookie("userId", String.valueOf(user3.getId()));
             cookie.setPath("/");
-            cookie.setMaxAge(7*24*60*60);
+            cookie.setMaxAge(7 * 24 * 60 * 60);
             cookie.setSecure(false);
             response.addCookie(cookie);
             return ResponseEntity.ok("User registered successfully.");

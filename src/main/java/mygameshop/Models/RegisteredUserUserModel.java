@@ -2,7 +2,7 @@ package mygameshop.Models;
 
 import mygameshop.interfaces.RegisteredUser;
 
-public class RegisteredUserUserModel implements RegisteredUser {
+public final class RegisteredUserUserModel implements RegisteredUser {
     private int Id;
     private boolean Banned;
     private boolean IsAdmin;

@@ -11,10 +11,14 @@ import java.sql.ResultSet;
 
 public final class RegisteredUserDB {
 
-    private RegisteredUserDB() {}
+    private RegisteredUserDB() {
+
+    }
     // Insert a new Registered User
-    public static void insertRegisteredUser(RegisteredUser user) {
-        String query = "INSERT INTO RegisteredUser (Banned, IsAdmin, LoginName, PassHash) VALUES (?, ?, ?, ?)";
+    public static void insertRegisteredUser(final RegisteredUser user) {
+        String query = """
+                INSERT INTO RegisteredUser \
+                (Banned, IsAdmin, LoginName, PassHash) VALUES (?, ?, ?, ?)""";
 
         try (Connection conn = DriverManager.getConnection(MainDBController.MAIN_DB);
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -32,7 +36,7 @@ public final class RegisteredUserDB {
     }
 
     // Fetch a RegisteredUser by ID
-    public static RegisteredUserUserModel getRegisteredUserById(int id) {
+    public static RegisteredUserUserModel getRegisteredUserById(final int id) {
         String query = "SELECT * FROM RegisteredUser WHERE Id = ?";
         RegisteredUserUserModel user = null;
 
@@ -57,8 +61,8 @@ public final class RegisteredUserDB {
         return user;
     }
 
-    public static RegisteredUserUserModel getRegisteredUserByData
-            (String loginName, String passHash) {
+    public static RegisteredUserUserModel getRegisteredUserByData(
+            final String loginName, final String passHash) {
         String query = "SELECT * FROM RegisteredUser WHERE LoginName = ? AND PassHash = ?";
         RegisteredUserUserModel user = null;
 
@@ -85,7 +89,7 @@ public final class RegisteredUserDB {
     }
 
     // Update a Registered User
-    public static void updateRegisteredUser(RegisteredUserUserModel user) {
+    public static void updateRegisteredUser(final RegisteredUserUserModel user) {
         String query = """
                 UPDATE RegisteredUser SET Banned = ?, \
                 IsAdmin = ?, LoginName = ?, PassHash = ? WHERE Id = ?""";
