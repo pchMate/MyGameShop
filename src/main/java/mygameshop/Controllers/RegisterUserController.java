@@ -2,53 +2,69 @@ package mygameshop.Controllers;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import mygameshop.DBController.RegisteredUserDB;
 import mygameshop.Models.RegisteredUserModel;
-import mygameshop.interfaces.RegisteredUser;
+import mygameshop.Service.RegisterUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Objects;
 
 @Controller
 @RequestMapping("/auth")
-public final class RegisterUserController {
+public class RegisterUserController {
 
-    @GetMapping("/register")
-    public String showRegisterForm() {
+    @Autowired
+    private RegisterUserService registerUserService;
+
+    @RequestMapping(value = "/main", method = RequestMethod.GET)
+    public String add(Model model) {
+        model.addAttribute("register", new RegisteredUserModel());
         return "authing/register";
     }
 
-    @PostMapping("/register")
+    @RequestMapping(value =  "/register", method = RequestMethod.POST)
     public ResponseEntity<String> register(
-            final @ModelAttribute("registeredUser") RegisteredUserModel user,
-            final HttpServletResponse response) {
-        if (user.loginname() == null || user.loginname().isEmpty()
-        || user.passhash() == null || user.passhash().isEmpty()) {
+            @ModelAttribute RegisteredUserModel user,
+            HttpServletResponse response, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.ok("authing/register.");
+        }
+        if (user.name == null || user.name.isEmpty()
+        || user.passhash == null || user.passhash.isEmpty()) {
             return ResponseEntity.badRequest().
                     body("LoginName and PassHash are required.");
         }
 
+        MessageDigest digest = null;
         try {
-            RegisteredUserModel user2 = RegisteredUserDB.getRegisteredUserByData(
-                    user.loginname(), user.passhash());
-            if (user2 != null)
+            digest = MessageDigest.getInstance("SHA3-256");
+        } catch (NoSuchAlgorithmException e) {
+            return ResponseEntity.badRequest().body("Cannot encrypt password!");
+        }
+        byte[] hashbytes = digest.digest(
+                user.passhash.getBytes());
+        user.passhash = Base64.getEncoder().encodeToString(hashbytes);
+
+        try {
+            if (registerUserService.findByName(
+                    user.name, user.passhash).isEmpty())
             {
                 return ResponseEntity.badRequest().body("User already registered.");
             }
-            RegisteredUserDB.insertRegisteredUser(user);
-            RegisteredUserModel user3 = RegisteredUserDB.getRegisteredUserByData(
-                    user.loginname(), user.passhash());
-            if (!Objects.equals(user3.loginname(), user.loginname()))
+            RegisteredUserModel user3 = registerUserService.save(user);
+            if (!Objects.equals(user3.name, user.name))
             {
                 return ResponseEntity.badRequest().
                         body("Something happened in database");
             }
-            Cookie cookie = new Cookie("userId", String.valueOf(user3.getId()));
+            Cookie cookie = new Cookie("userId", String.valueOf(user3.id));
             cookie.setPath("/");
             cookie.setMaxAge(7 * 24 * 60 * 60);
             cookie.setSecure(false);
