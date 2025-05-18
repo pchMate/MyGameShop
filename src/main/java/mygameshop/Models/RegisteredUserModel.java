@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.ui.Model;
 
 @Data
 @NoArgsConstructor
@@ -17,8 +16,8 @@ import org.springframework.ui.Model;
 @Entity
 public final class RegisteredUserModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public int id = -1;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int id;
     public boolean banned;
     public boolean isAdmin;
     public String name;

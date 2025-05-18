@@ -1,11 +1,13 @@
 package mygameshop.Controllers;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import mygameshop.Models.RegisteredUserModel;
+import mygameshop.Models.UserModel;
 import mygameshop.Service.RegisterUserService;
+import mygameshop.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
@@ -23,56 +27,92 @@ public class RegisterUserController {
     @Autowired
     private RegisterUserService registerUserService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(value = "/main", method = RequestMethod.GET)
-    public String add(Model model) {
+    public String add(Model model, HttpServletRequest request) {
         model.addAttribute("register", new RegisteredUserModel());
-        return "authing/register";
+        String userid = getCookie(request, "userId");
+        if (userid == null)
+            return "authing/login";
+        int userid_i = Integer.getInteger(userid);
+        if (registerUserService.findById(userid_i).isEmpty())
+            return "authing/login";
+        return "redirect:/games/list";
     }
 
-    @RequestMapping(value =  "/register", method = RequestMethod.POST)
-    public ResponseEntity<String> register(
+    public String getCookie(HttpServletRequest request, String name) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    @RequestMapping(value =  "/login", method = RequestMethod.POST)
+    public String register(
             @ModelAttribute RegisteredUserModel user,
             HttpServletResponse response, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.ok("authing/register.");
+            return "authing/login";
         }
         if (user.name == null || user.name.isEmpty()
         || user.passhash == null || user.passhash.isEmpty()) {
-            return ResponseEntity.badRequest().
-                    body("LoginName and PassHash are required.");
+            return "LoginName and PassHash are required.";
         }
 
         MessageDigest digest = null;
         try {
             digest = MessageDigest.getInstance("SHA3-256");
         } catch (NoSuchAlgorithmException e) {
-            return ResponseEntity.badRequest().body("Cannot encrypt password!");
+            return "Cannot encrypt password!";
         }
         byte[] hashbytes = digest.digest(
                 user.passhash.getBytes());
         user.passhash = Base64.getEncoder().encodeToString(hashbytes);
-
+        System.out.println("Pass changed");
         try {
-            if (registerUserService.findByName(
-                    user.name, user.passhash).isEmpty())
+            Optional<RegisteredUserModel> foundUser = registerUserService.findByName(
+                    user.name, user.passhash);
+            System.out.println("Checking if user exists");
+            if (foundUser.isPresent())
             {
-                return ResponseEntity.badRequest().body("User already registered.");
+                SetCookie(response, foundUser.get().id);
+                return "redirect:/games/list";
             }
+            System.out.println("if not we save");
+            user.isAdmin = false;
+            user.banned = false;
             RegisteredUserModel user3 = registerUserService.save(user);
+            UserModel model = new UserModel();
+            model.name = user3.name;
+            model.gamesOwned = new ArrayList<>();
+            System.out.println("save other user");
+            userService.save(model);
             if (!Objects.equals(user3.name, user.name))
             {
-                return ResponseEntity.badRequest().
-                        body("Something happened in database");
+                return "Something happened in database";
             }
-            Cookie cookie = new Cookie("userId", String.valueOf(user3.id));
-            cookie.setPath("/");
-            cookie.setMaxAge(7 * 24 * 60 * 60);
-            cookie.setSecure(false);
-            response.addCookie(cookie);
-            return ResponseEntity.ok("User registered successfully.");
+            SetCookie(response, user3.id);
+            return "redirect:/games/list";
         } catch (Exception e) {
+            System.out.println("EXCEPTION!!!");
+            System.out.println(e.toString());
             System.out.println(e.getMessage());
-            return ResponseEntity.status(500).body("Error registering user.");
+            return "redirect:/errors/UserLoginError";
         }
+    }
+
+    private void SetCookie(HttpServletResponse response, int id)
+    {
+        Cookie cookie = new Cookie("userId", String.valueOf(id));
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setSecure(false);
+        response.addCookie(cookie);
     }
 }

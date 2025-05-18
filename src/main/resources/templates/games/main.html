@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Games and infos</h1>
+    </header>
+
+    <main>
+        <a href="/games/new" class="btn">Create New Game</a>
+
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Loop through books -->
+            <tr th:each="game : ${games}">
+                <td th:text="${game.id}">1</td>
+                <td th:text="${game.title}">Book Title</td>
+                <td th:text="${game.price}">0.00</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a href="/" class="btn">Back to Home</a> <!-- Back to Home Button -->
+    </main>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</html>
