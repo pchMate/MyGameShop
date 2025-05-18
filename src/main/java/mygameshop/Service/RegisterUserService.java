@@ -8,16 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class RegisterUserService {
+public final class RegisterUserService {
 
     @Autowired
     private RegisterUserRepository registerUserRepository;
 
     public RegisteredUserModel save(final RegisteredUserModel model) {
-        return registerUserRepository.save(model);
-    }
-
-    public RegisteredUserModel edit(final RegisteredUserModel model) {
         return registerUserRepository.save(model);
     }
 
@@ -29,7 +25,8 @@ public class RegisterUserService {
         registerUserRepository.deleteById(id);
     }
 
-    public Optional<RegisteredUserModel> findByName(final String name, String passhash) {
+    public Optional<RegisteredUserModel> findByName(
+            final String name, String passhash) {
         return registerUserRepository.findByNameAndPasshash(name, passhash);
     }
 }

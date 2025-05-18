@@ -155,6 +155,10 @@
                 <configuration>
                     <excludes>
                         <exclude>**/Main.*</exclude>
+                        <exclude>**/Repository/**</exclude>
+                        <exclude>**/Models/**</exclude>
+                        <exclude>**/Config/**</exclude>
+                        <exclude>**/Controllers/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

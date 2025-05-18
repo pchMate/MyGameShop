@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,7 +24,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
-public class RegisterUserController {
+public final class RegisterUserController {
 
     @Autowired
     private RegisterUserService registerUserService;
@@ -35,10 +37,14 @@ public class RegisterUserController {
         model.addAttribute("register", new RegisteredUserModel());
         String userid = getCookie(request, "userId");
         if (userid == null)
+        {
             return "authing/login";
-        int userid_i = Integer.getInteger(userid);
-        if (registerUserService.findById(userid_i).isEmpty())
+        }
+        int useridInt = Integer.getInteger(userid);
+        if (registerUserService.findById(useridInt).isEmpty())
+        {
             return "authing/login";
+        }
         return "redirect:/games/list";
     }
 
@@ -65,7 +71,7 @@ public class RegisterUserController {
             return "LoginName and PassHash are required.";
         }
 
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA3-256");
         } catch (NoSuchAlgorithmException e) {
@@ -81,7 +87,7 @@ public class RegisterUserController {
             System.out.println("Checking if user exists");
             if (foundUser.isPresent())
             {
-                SetCookie(response, foundUser.get().id);
+                setCookie(response, foundUser.get().id);
                 return "redirect:/games/list";
             }
             System.out.println("if not we save");
@@ -97,17 +103,16 @@ public class RegisterUserController {
             {
                 return "Something happened in database";
             }
-            SetCookie(response, user3.id);
+            setCookie(response, user3.id);
             return "redirect:/games/list";
         } catch (Exception e) {
             System.out.println("EXCEPTION!!!");
-            System.out.println(e.toString());
             System.out.println(e.getMessage());
             return "redirect:/errors/UserLoginError";
         }
     }
 
-    private void SetCookie(HttpServletResponse response, int id)
+    private void setCookie(HttpServletResponse response, int id)
     {
         Cookie cookie = new Cookie("userId", String.valueOf(id));
         cookie.setPath("/");

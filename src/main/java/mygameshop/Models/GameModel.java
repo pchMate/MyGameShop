@@ -1,12 +1,15 @@
 package mygameshop.Models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ElementCollection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +28,6 @@ public final class GameModel {
     public String description;
     public double rating;
     @ElementCollection
-    public List<TagModel> tags = new ArrayList<>();
+    public List<TagModel> tags;
     public Date releaseDate;
 }

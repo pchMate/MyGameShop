@@ -23,7 +23,7 @@ public class GameServiceTest {
     private GameService gameService;
 
     @Test
-    void getAllBooks() {
+    void getAll() {
         //GIVEN
         GameModel model1 = new GameModel();
         model1.id = 1;
